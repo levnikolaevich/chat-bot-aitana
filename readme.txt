@@ -43,6 +43,24 @@ Before you start, make sure you have the following prerequisites installed and s
 By following these setup instructions, you'll ensure that all components of the project function correctly.
 
 -------------
+Crawling a Website
+-------------
+To crawl a website, you will use Scrapy from the terminal.
+Ensure you are in the project directory where scrapy.cfg file is located.
+
+Follow these simple steps to initiate the crawl:
+- Open a terminal or Anaconda Prompt and navigate to your project directory.
+- Activate your environment with:
+     ```
+     conda activate AitanaENV
+     ```
+- Initiate the crawling process with Scrapy by executing the following command:
+
+    scrapy crawl aitana_spider
+
+Once executed, Scrapy will begin crawling the website as defined by the aitana_spider. The process involves requesting pages, parsing the returned HTML to extract data, and optionally following links to other pages to continue the crawl.
+
+-------------
 Launching the Application
 -------------
 
@@ -65,9 +83,8 @@ Launching the Application
 Happy processing!
 
 -------------
-Flight Log
+Usefully commands
 -------------
-Usefully commands:
 conda deactivate
 conda remove --name AitanaENV --all
 
@@ -78,3 +95,5 @@ conda env update --name AitanaENV --file environment.yml
 pip install faiss-cpu
 pip install sentence-transformers
 pip install gradio
+
+scrapy crawl aitana_spider
