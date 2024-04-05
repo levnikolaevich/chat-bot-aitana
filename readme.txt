@@ -97,3 +97,5 @@ pip install sentence-transformers
 pip install gradio
 
 scrapy crawl aitana_spider
+
+¿Cómo funciona el proceso de preinscripción para el Grado en Turismo y cuáles son las tasas de matrícula para diferentes inscripciones?

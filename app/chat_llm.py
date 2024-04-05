@@ -20,8 +20,9 @@ class Chat:
         self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
         self.tokenizer = AutoTokenizer.from_pretrained(model_id)
         self.model = AutoModelForCausalLM.from_pretrained(model_id).to(self.device)
+        self.__chat_history = []
 
-    def _clean_model_response(self, response_text):
+    def __clean_model_response(self, response_text):
         """
         Cleans the model's response by removing the prompt and service tokens.
 
@@ -56,6 +57,7 @@ class Chat:
         Returns:
             str: The generated response text.
         """
+        print("get_answer from LLM started")
         chat = [{"role": "user", "content": content}]
         prompt = self.tokenizer.apply_chat_template(chat, tokenize=False, add_generation_prompt=True)
 
@@ -64,4 +66,13 @@ class Chat:
         outputs = self.model.generate(input_ids=input_ids, max_new_tokens=max_new_tokens)
 
         response_text = self.tokenizer.decode(outputs[0])
-        return self._clean_model_response(response_text)
+        return self.__clean_model_response(response_text)
+
+    def update_chat_history(self, histories):
+        self.__chat_history.extend(histories)
+
+    def get_chat_history(self):
+        return self.__chat_history
+
+    def clean_chat_history(self):
+        self.__chat_history = []

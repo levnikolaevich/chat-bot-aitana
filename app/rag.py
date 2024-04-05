@@ -12,6 +12,11 @@ class RagFAISS:
         self.indexFlatIP = None  # Placeholder for the FAISS index
         self.text = []  # Placeholder for the paragraphs extracted from the PDF
         self.normalize = False  # Flag to indicate whether to normalize embeddings
+        self.__prepare_data()
+
+    def __prepare_data(self):
+        text2vec = self.__extract_text_to_paragraphs()
+        self.__read_or_create_faiss_index(text2vec)
 
     def search(self, query, k=5):
         """
@@ -35,7 +40,7 @@ class RagFAISS:
         RAG_context = [self.text[idx] for idx in I[0]]
         return D, I, RAG_context
 
-    def read_or_create_faiss_index(self, paragraphs, normalize=False):
+    def __read_or_create_faiss_index(self, paragraphs, normalize=False):
         """
         Load a FAISS index from a file if it exists, or create one using embeddings
         from the provided paragraphs.
@@ -77,7 +82,7 @@ class RagFAISS:
         self.indexFlatIP = faiss.IndexFlatIP(d)
         self.indexFlatIP.add(embeddings)
 
-    def extract_text_to_paragraphs(self, json_path="rag-faiss/page_contents.json"):
+    def __extract_text_to_paragraphs(self, json_path="rag-faiss/page_contents.json"):
         # Iterate through all files in the specified folder
         paragraphs = []
 
