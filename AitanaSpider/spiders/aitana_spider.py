@@ -22,6 +22,9 @@ class AitanaSpider(scrapy.Spider):
             yield scrapy.Request(url=url, callback=self.parse)
 
     def parse(self, response, **kwargs):
+        if 'text/html' not in response.headers.get('Content-Type').decode():
+            return
+
         # Adjusting to use a single .txt file and include page title
         url_parts = response.url.split("/")
         page_name = url_parts[-1]
@@ -29,6 +32,7 @@ class AitanaSpider(scrapy.Spider):
         if response.url == 'https://www.ua.es':
             page_name = 'index'
         else:
+            print(page_name)
             # Si la URL termina con ".html" se elimina la extensión
             if page_name.endswith('.html'):
                 page_name = os.path.splitext(page_name)[0]
@@ -47,6 +51,10 @@ class AitanaSpider(scrapy.Spider):
             script_or_style.decompose()
 
         main_content = soup.find('main')
+        if not main_content:
+            self.log(f'No main content found for {response.url}. Skipping.')
+            return
+
         text = main_content.get_text(separator='\n', strip=True) if main_content else ''
         word_count = len(text.split())
 
