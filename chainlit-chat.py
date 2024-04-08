@@ -4,7 +4,6 @@ from chainlit.input_widget import Switch, Select
 from aitana_bot import AitanaBot
 
 available_llm = ["google/gemma-1.1-2b-it", "google/gemma-1.1-7b-it"]
-current_LLM = "google/gemma-1.1-7b-it"
 max_new_tokens = 250
 RAG_search_k = 2
 
@@ -22,7 +21,7 @@ async def setup_agent(settings):
 
 @cl.on_chat_start
 async def on_chat_start():
-    aitana_bot = AitanaBot(current_LLM)
+    aitana_bot = AitanaBot(available_llm[0])
     cl.user_session.set("aitana_bot", aitana_bot)
 
     hello_msg = ("¡Hola! Estoy listo para responder preguntas sobre el sitio web de la Universidad de Alicante.\n" +
