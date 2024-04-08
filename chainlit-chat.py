@@ -15,7 +15,7 @@ async def on_chat_start():
 
     hello_msg = ("¡Hola! Estoy listo para responder preguntas sobre el sitio web de la Universidad de Alicante.\n" +
                  "Puedes hacer preguntas. Por ejemplo:\n" +
-                 "1. ¿Cuánto cuesta la matrícula en Turístico Grado?\n" +
+                 "1. ¿Cuánto cuesta la matrícula en Inteligencia Artificial?\n" +
                  "2. ¿Cuáles son los plazos de admisión para la facultad de Inteligencia Artificial?")
 
     await cl.Message(

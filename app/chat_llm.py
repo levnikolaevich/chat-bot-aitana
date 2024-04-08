@@ -66,6 +66,7 @@ class Chat:
         outputs = self.model.generate(input_ids=input_ids, max_new_tokens=max_new_tokens)
 
         response_text = self.tokenizer.decode(outputs[0])
+        print("get_answer from LLM finished")
         return self.__clean_model_response(response_text)
 
     def update_chat_history(self, histories):
