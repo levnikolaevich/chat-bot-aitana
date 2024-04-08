@@ -75,7 +75,11 @@ Launching the Application
          ```
     - Run the application with Gradio by executing the following command:
 
-        python main.py
+        python gradio-chat.py
+
+    - Run the application with Chainlit by executing the following command:
+
+        chainlit run chainlit-chat.py -w
 
     After executing the command, Gradio will start the application and automatically open it in your default web browser.
     If it doesn't open automatically, Gradio will provide a local URL in the terminal output, which you can manually copy and paste into your browser to access the application.

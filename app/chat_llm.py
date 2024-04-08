@@ -10,7 +10,7 @@ class Chat:
         model (AutoModelForCausalLM): The causal language model for generating responses.
     """
 
-    def __init__(self, model_id="google/gemma-2b-it"):
+    def __init__(self, model_id="google/gemma-1.1-2b-it"):
         """
         Initializes the Chat class with a specified conversational model.
 

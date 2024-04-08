@@ -4,7 +4,7 @@ import os
 
 
 class AitanaBot:
-    def __init__(self, llm_model_id="google/gemma-2b-it"):
+    def __init__(self, llm_model_id="google/gemma-1.1-2b-it"):
         self.__rag_faiss = None
         self.__chat_llm = None
         self.__llm_model_id = llm_model_id

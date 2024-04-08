@@ -1,4 +1,4 @@
-This is XeTeX, Version 3.141592653-2.6-0.999996 (MiKTeX 24.3.31) (preloaded format=xelatex 2024.4.7)  7 APR 2024 20:48
+This is XeTeX, Version 3.141592653-2.6-0.999996 (MiKTeX 24.3.31) (preloaded format=xelatex 2024.4.7)  7 APR 2024 21:01
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -2211,13 +2211,44 @@ Overfull \hbox (20.35634pt too wide) in paragraph at lines 47--78
 |  $[]$ 
  []
 
-[3
 
-]) (capitulos/preliminaresconagradecimientos.tex [4
+Underfull \vbox (badness 10000) has occurred while \output is active []
+
+ [3
+
+]
+
+Package scrlayer-scrpage Warning: \headheight to low.
+(scrlayer-scrpage)                At least 20.4pt needed,
+(scrlayer-scrpage)                but only 17.0pt found.
+(scrlayer-scrpage)                I'll enlarge \headheight, for further
+(scrlayer-scrpage)                processing, but you should do this yourself,
+(scrlayer-scrpage)                e.g., setting geometry's option
+(scrlayer-scrpage)                `head=20.4pt'.
+(scrlayer-scrpage)                I'll also decrease \topmargin on input line 8
+0.
+
+
+Overfull \vbox (3.4pt too high) has occurred while \output is active []
 
 
 
-] [5] [6
+Package scrlayer-scrpage Warning: \footheight to low.
+(scrlayer-scrpage)                At least 20.4pt needed,
+(scrlayer-scrpage)                but only 17.0pt found.
+(scrlayer-scrpage)                I'll enlarge \footheight, for further
+(scrlayer-scrpage)                processing, but you should do this yourself,
+(scrlayer-scrpage)                e.g., using
+(scrlayer-scrpage)                  \setlength{\footheight}{20.4pt}
+(scrlayer-scrpage)                in your preamble.
+(scrlayer-scrpage)                I'll also increase \footskip on input line 80
+.
+
+[4]) (capitulos/preliminaresconagradecimientos.tex [5
+
+
+
+] [6
 
 
 ] [7
@@ -2241,23 +2272,11 @@ Package scrlayer-scrpage Warning: \headheight to low.
 
 Overfull \vbox (3.4pt too high) has occurred while \output is active []
 
+ [9
 
 
-Package scrlayer-scrpage Warning: \footheight to low.
-(scrlayer-scrpage)                At least 20.4pt needed,
-(scrlayer-scrpage)                but only 17.0pt found.
-(scrlayer-scrpage)                I'll enlarge \footheight, for further
-(scrlayer-scrpage)                processing, but you should do this yourself,
-(scrlayer-scrpage)                e.g., using
-(scrlayer-scrpage)                  \setlength{\footheight}{20.4pt}
-(scrlayer-scrpage)                in your preamble.
-(scrlayer-scrpage)                I'll also increase \footskip on input line 38
-.
-
-[9
-
-
-] [10
+]
+[10
 
 
 ] [11
@@ -2721,7 +2740,7 @@ Package rerunfilecheck Info: File `TFG-TFM_EPS_UA.out' has not changed.
 Here is how much of TeX's memory you used:
  65930 strings out of 409555
  1507833 string characters out of 5776261
- 2782532 words of memory out of 5000000
+ 2782792 words of memory out of 5000000
  86891 multiletter control sequences out of 15000+600000
  585049 words of font info for 187 fonts, out of 8000000 for 9000
  1348 hyphenation exceptions out of 8191
