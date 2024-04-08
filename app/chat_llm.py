@@ -1,5 +1,6 @@
 from transformers import AutoTokenizer, AutoModelForCausalLM
 import torch
+import time
 
 class Chat:
     """
@@ -15,22 +16,29 @@ class Chat:
         Initializes the Chat class with a specified conversational model.
 
         Args:
-            model_id (str): Identifier for the model to load (default is "google/gemma-2b-it").
+            model_id (str): Identifier for the model to load (default is "google/gemma-1.1-2b-it").
         """
         self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+        print("Device detected: ", self.device)
+
+        torch_dtype = torch.bfloat16 if torch.cuda.is_available() else torch.float32
+
         self.tokenizer = AutoTokenizer.from_pretrained(model_id)
-        self.model = AutoModelForCausalLM.from_pretrained(model_id).to(self.device)
+        self.model = AutoModelForCausalLM.from_pretrained(
+                        model_id,
+                        torch_dtype=torch_dtype).to(self.device)
         self.__chat_history = []
 
     def __clean_model_response(self, response_text):
         """
-        Cleans the model's response by removing the prompt and service tokens.
+        Cleans the model's response by removing predefined tokens that indicate the start of the model's turn and
+        any service tokens indicating the end of a turn or end of sequence. This makes the response more human-readable.
 
         Args:
             response_text (str): The raw response text from the model.
 
         Returns:
-            str: The cleaned response text from the model.
+            str: The cleaned response text, ready for presentation to the user.
         """
         start_token = "<start_of_turn>model"
         end_tokens = ["<end_of_turn>", "<eos>"]
@@ -46,7 +54,7 @@ class Chat:
 
         return response_text
 
-    def get_answer(self, content, max_new_tokens=250):
+    def get_answer(self, content, max_new_tokens=150):
         """
         Generates a response to the input content using the loaded model.
 
@@ -58,6 +66,8 @@ class Chat:
             str: The generated response text.
         """
         print("get_answer from LLM started")
+        start_time = time.time()
+
         chat = [{"role": "user", "content": content}]
         prompt = self.tokenizer.apply_chat_template(chat, tokenize=False, add_generation_prompt=True)
 
@@ -66,7 +76,9 @@ class Chat:
         outputs = self.model.generate(input_ids=input_ids, max_new_tokens=max_new_tokens)
 
         response_text = self.tokenizer.decode(outputs[0])
-        print("get_answer from LLM finished")
+        end_time = time.time()
+        elapsed_time = end_time - start_time
+        print(f"get_answer from LLM finished. Time taken to get answer from LLM: {elapsed_time} seconds")
         return self.__clean_model_response(response_text)
 
     def update_chat_history(self, histories):
