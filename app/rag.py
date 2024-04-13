@@ -1,7 +1,6 @@
 from sentence_transformers import SentenceTransformer
 import faiss
 import os
-import json
 
 from app.content_extractor import ContentExtractor
 

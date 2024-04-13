@@ -89,12 +89,22 @@ Happy processing!
 -------------
 Usefully commands
 -------------
+conda activate AitanaENV
 conda deactivate
 conda remove --name AitanaENV --all
 
 conda env export > environment.yml
 conda env create -f environment.yml
-conda env update --name AitanaENV --file environment.yml
+conda env update --name AitanaENV --file environment.yml --prune
+conda remove --name AitanaENV --all
+
+conda list --export > package-list.txt
+conda update --all
+conda clean --all
+pip list --outdated | Select-String -Pattern "^\w+" | ForEach-Object { $_.Matches.Groups[0].Value } | ForEach-Object { pip install --upgrade $_ }
+pip cache purge
+
+
 
 pip install faiss-cpu
 pip install sentence-transformers

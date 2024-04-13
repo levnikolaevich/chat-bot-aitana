@@ -2,6 +2,8 @@ from app.chat_llm import Chat
 from app.rag import RagFAISS
 import os
 
+from app.ragv2 import RAGatouilleAitana
+
 
 class AitanaBot:
     def __init__(self, llm_model_id="google/gemma-1.1-2b-it", modelST_id='sentence-transformers/LaBSE'):
@@ -14,6 +16,7 @@ class AitanaBot:
         # 'sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2'
         if self.__rag_faiss is None:
             self.__rag_faiss = RagFAISS(self.__modelST_id)
+            #self.__rag_faiss = RAGatouilleAitana()
 
         return self.__rag_faiss
 
