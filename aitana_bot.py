@@ -15,8 +15,8 @@ class AitanaBot:
     def __get_faiss_db(self):
         # 'sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2'
         if self.__rag_faiss is None:
-            self.__rag_faiss = RagFAISS(self.__modelST_id)
-            #self.__rag_faiss = RAGatouilleAitana()
+            #self.__rag_faiss = RagFAISS(self.__modelST_id)
+            self.__rag_faiss = RAGatouilleAitana()
 
         return self.__rag_faiss
 
@@ -52,4 +52,5 @@ class AitanaBot:
 
     def search_in_faiss_index(self, query, k=5):
         rag_faiss = self.__get_faiss_db()
-        return rag_faiss.search(query, k)
+        #return rag_faiss.search(query, k)
+        return rag_faiss.get_RAG().search(query)

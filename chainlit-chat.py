@@ -73,9 +73,13 @@ async def on_message(message: cl.Message):
     RAG_context = None
 
     if cl.user_session.get("RAG_is_working"):
-        _, _, RAG_context = await cl.make_async(aitana_bot.search_in_faiss_index)(message.content, RAG_search_k)
+        #_, _, RAG_context = await cl.make_async(aitana_bot.search_in_faiss_index)(message.content, RAG_search_k)
+        RAG_context = await cl.make_async(aitana_bot.search_in_faiss_index)(message.content)
 
-        content_list = [f'{item["page_name"]} {item["content"]}' for item in RAG_context]
+        print(RAG_context)
+
+        #content_list = [f'{item["page_name"]} {item["content"]}' for item in RAG_context]
+        content_list = [f'{item["content"]}' for item in RAG_context]
         context_str = "\n----------\n".join(content_list)
 
         context += "\n\nSite content:\n"
@@ -92,9 +96,9 @@ async def on_message(message: cl.Message):
 
     response.append("\n " + output + "\n")
 
-    if RAG_context is not None:
-        response.append("\n More info:")
-        response.append("\n" + RAG_context[0]['url'])
+    #if RAG_context is not None:
+        #response.append("\n More info:")
+        #response.append("\n" + RAG_context[0]['url'])
 
     msg.content = "".join(response)
 
