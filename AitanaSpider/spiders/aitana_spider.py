@@ -3,9 +3,18 @@ import scrapy
 import os
 from bs4 import BeautifulSoup
 import json
+import re
 
-K_MIN_WORDS = 90
-K_MAX_PAGES = 100
+CHUNK_MIN_WORDS = 90
+K_MAX_PAGES = 700
+WORDS_IN_CHUNK = 200
+
+priority_words = ['masteres', 'grados']
+exclude_words = ['sitemap', 'ua.es/va/', 'ua.es/en/']
+obligatory_words = ['web.ua.es', 'cfp.ua.es', 'es/masteres', 'es/grados', '/es/oia']
+
+chunk_mode = False
+
 
 class AitanaSpider(scrapy.Spider):
     name = 'aitana_spider'
@@ -15,41 +24,35 @@ class AitanaSpider(scrapy.Spider):
         self.max_pages = K_MAX_PAGES
         self.visited_urls = set()
         self.savedPageCount = 0
+        self.chunkCount = 0
 
     def start_requests(self, urls=None):
         if urls is None:
             urls = ["https://web.ua.es/es/grados-oficiales.html",
                     "https://web.ua.es/es/masteres-oficiales.html",
+                    "https://web.ua.es/es/oia",
                     "https://www.ua.es"]
         for url in urls:
             yield scrapy.Request(url=url, callback=self.parse)
 
     def parse(self, response, **kwargs):
+        # Mark the current page as visited
+        self.visited_urls.add(response.url)
+
         if 'text/html' not in response.headers.get('Content-Type').decode():
             #self.log(f'Skipped {response.url} because it does contain text/html Content-Type')
             return
 
-        # Adjusting to use a single .txt file and include page title
-        url_parts = response.url.split("/")
-        page_name = url_parts[-1]
-
-        if response.url == 'https://www.ua.es':
-            page_name = 'index'
-        else:
-            print(page_name)
-            # Si la URL termina con ".html" se elimina la extensión
-            if page_name.endswith('.html'):
-                page_name = os.path.splitext(page_name)[0]
-            else:
-                # En caso contrario se obtiene el índece anterior
-                page_name = url_parts[-2]
-
         # Path to the output txt file
-        save_path = 'rag-faiss/page_contents.txt'
         save_path_json = 'rag-faiss/page_contents.json'
-        os.makedirs(os.path.dirname(save_path), exist_ok=True)
 
         soup = BeautifulSoup(response.text, 'html.parser')
+
+        title_tag = soup.find('title')
+        if title_tag:
+            page_name = title_tag.text.strip()
+        else:
+            page_name = 'Unknown'
 
         for script_or_style in soup(['script', 'style', 'iframe']):
             script_or_style.decompose()
@@ -65,46 +68,48 @@ class AitanaSpider(scrapy.Spider):
         text = main_content.get_text(separator='\n', strip=True) if main_content else ''
         word_count = len(text.split())
 
-        if len(text) > 0 and word_count >= K_MIN_WORDS:
-            # Saving the page name and content with a delimiter
-            with open(save_path, 'a', encoding='utf-8') as f:
-                f.write(f"Page Name: {page_name} url: {response.url} | Content:\n{text}\n\n")
-                f.write(f"=============================================================\n\n")
+        if word_count >= CHUNK_MIN_WORDS:
+            self.savedPageCount += 1
 
-            data = {
-                "index": self.savedPageCount,
-                "page_name": page_name,
-                "url": response.url,
-                "content": text
-            }
-
-            if not os.path.isfile(save_path_json):
-                with open(save_path_json, 'w', encoding='utf-8') as f:
-                    json.dump([data], f, ensure_ascii=False, indent=4)
+            if chunk_mode:
+                chunks = self.split_text_by_words(text, WORDS_IN_CHUNK)
             else:
-                with open(save_path_json, 'r', encoding='utf-8') as f:
-                    content = json.load(f)
+                chunks = [text]
 
-                content.append(data)
-                self.savedPageCount += 1
+            for chunk in chunks:
+                if len(chunk) < CHUNK_MIN_WORDS:
+                    continue
 
-                with open(save_path_json, 'w', encoding='utf-8') as f:
-                    json.dump(content, f, ensure_ascii=False, indent=4)
+                data = {
+                    "index_chunk": self.chunkCount,
+                    "index_page": self.savedPageCount,
+                    "page_name": page_name.strip(),
+                    "url": response.url,
+                    "content": chunk.strip()
+                }
 
-                self.log(f'Added content of {response.url} to {save_path_json}')
+                self.chunkCount += 1
+                if not os.path.isfile(save_path_json):
+                    with open(save_path_json, 'w', encoding='utf-8') as f:
+                        json.dump([data], f, ensure_ascii=False, indent=4)
+                else:
+                    with open(save_path_json, 'r', encoding='utf-8') as f:
+                        content = json.load(f)
+
+                    content.append(data)
+
+                    with open(save_path_json, 'w', encoding='utf-8') as f:
+                        json.dump(content, f, ensure_ascii=False, indent=4)
+
+            self.log(f'Added content of {response.url} to {save_path_json}, page count: {self.savedPageCount}, '
+                     f'chunk count: {self.chunkCount}')
         else:
             self.log(f'Skipped {response.url} because it does not contain enough text')
-        # Mark the current page as visited
-        self.visited_urls.add(response.url)
 
         # Check if the number of visited pages has reached the maximum
         if self.savedPageCount >= self.max_pages:
             self.log(f'Number of visited pages reached maximum ({self.max_pages}). Stopping crawler.')
             raise scrapy.exceptions.CloseSpider('Maximum pages reached')
-
-        priority_words = ['masteres', 'grados']
-        exclude_words = ['sitemap', 'ua.es/va/', 'ua.es/en/']
-        obligatory_words = ['web.ua.es', 'cfp.ua.es', 'es/masteres', 'es/grados']
 
         all_links = response.css('a::attr(href)').getall()
         sorted_links = sorted(all_links, key=lambda link: any(word in link for word in priority_words), reverse=True)
@@ -122,3 +127,31 @@ class AitanaSpider(scrapy.Spider):
             next_url = response.urljoin(next_page)
             if next_url not in self.visited_urls:
                 yield scrapy.Request(url=next_url, callback=self.parse)
+
+    def split_text_by_words(self, text: str, max_words=200):
+        sentences = re.split(r'(?<=[.!?]) +', text)
+        chunks = []
+        current_chunk = []
+        current_count = 0
+
+        for sentence in sentences:
+            words = sentence.split()
+            if current_count + len(words) <= max_words:
+                current_chunk.append(sentence)
+                current_count += len(words)
+            else:
+                chunks.append(' '.join(current_chunk))
+                current_chunk = [sentence]
+                current_count = len(words)
+
+        # Add the last chunk if it's not empty
+        if current_chunk:
+            chunks.append(' '.join(current_chunk))
+
+        # Check if the last chunk has less than 100 words
+        # and combine it with the penultimate one if possible
+        if len(chunks) > 1 and len(chunks[-1].split()) < max_words / 2:
+            chunks[-2] += ' ' + chunks[-1]
+            chunks.pop()
+
+        return chunks

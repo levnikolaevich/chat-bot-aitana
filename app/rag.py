@@ -3,9 +3,11 @@ import faiss
 import os
 import json
 
+from app.content_extractor import ContentExtractor
+
 
 class RagFAISS:
-    def __init__(self, model_st_id, index_file='rag-faiss/faiss_index.bin'):
+    def __init__(self, model_st_id='avsolatorio/GIST-small-Embedding-v0', index_file='rag-faiss/faiss_index.bin'):
         # Initialize the SentenceTransformer model on creation of a RagFAISS instance
         self.index_file = index_file
         self.modelST = SentenceTransformer(model_st_id)
@@ -15,7 +17,7 @@ class RagFAISS:
         self.__prepare_data()
 
     def __prepare_data(self):
-        text2vec = self.__extract_text_to_paragraphs()
+        text2vec = ContentExtractor.extract_text_to_paragraphs()
         self.__read_or_create_faiss_index(text2vec)
 
     def search(self, query, k=5):
@@ -70,7 +72,7 @@ class RagFAISS:
         """
         self.normalize = normalize
         self.text = paragraphs
-        corpus = [item["content"] for item in paragraphs]
+        corpus = [f'{item["page_name"]} {item["content"]}' for item in paragraphs]
         embeddings = self.modelST.encode(corpus, show_progress_bar=True)
 
         # Normalize embeddings if required
@@ -81,20 +83,3 @@ class RagFAISS:
         d = embeddings.shape[1]  # Dimensionality of embeddings
         self.indexFlatIP = faiss.IndexFlatIP(d)
         self.indexFlatIP.add(embeddings)
-
-    def __extract_text_to_paragraphs(self, json_path="rag-faiss/page_contents.json"):
-        # Iterate through all files in the specified folder
-        paragraphs = []
-
-        # Check if the JSON file exists
-        if os.path.exists(json_path):
-            # Open and read the JSON file
-            with open(json_path, 'r', encoding='utf-8') as json_file:
-                json_data = json.load(json_file)
-                # Assuming json_data is a list of objects with a 'content' field
-                for item in json_data:
-                    if 'content' in item:
-                        # Append the content field to paragraphs
-                        paragraphs.append(item)
-
-        return paragraphs

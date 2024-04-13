@@ -1,5 +1,6 @@
 import chainlit as cl
 from chainlit.input_widget import Switch, Select
+import torch
 
 from aitana_bot import AitanaBot
 
@@ -9,13 +10,20 @@ RAG_search_k = 2
 
 @cl.on_settings_update
 async def setup_agent(settings):
+    # Update the RAG search flag
     rag = settings["RAG_is_working"]
     cl.user_session.set("RAG_is_working", rag)
 
+    # Clear the cache and set the new LLM model
     current_LLM = settings["CurrentLLM"]
+
+    cl.user_session.set("aitana_bot", None)
+    torch.cuda.empty_cache()
+
     aitana_bot = AitanaBot(current_LLM)
     cl.user_session.set("aitana_bot", aitana_bot)
 
+    # Update the settings
     print("on_settings_update", settings)
 
 
@@ -67,8 +75,8 @@ async def on_message(message: cl.Message):
     if cl.user_session.get("RAG_is_working"):
         _, _, RAG_context = await cl.make_async(aitana_bot.search_in_faiss_index)(message.content, RAG_search_k)
 
-        content_list = [item["content"] for item in RAG_context]
-        context_str = "\n".join(content_list)
+        content_list = [f'{item["page_name"]} {item["content"]}' for item in RAG_context]
+        context_str = "\n----------\n".join(content_list)
 
         context += "\n\nSite content:\n"
         context += "\n\n" + context_str + "\n"

@@ -4,14 +4,16 @@ import os
 
 
 class AitanaBot:
-    def __init__(self, llm_model_id="google/gemma-1.1-2b-it"):
+    def __init__(self, llm_model_id="google/gemma-1.1-2b-it", modelST_id='sentence-transformers/LaBSE'):
         self.__rag_faiss = None
         self.__chat_llm = None
+        self.__modelST_id = modelST_id
         self.__llm_model_id = llm_model_id
 
-    def __get_faiss_db(self, modelST_id='avsolatorio/GIST-small-Embedding-v0'):
+    def __get_faiss_db(self):
+        # 'sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2'
         if self.__rag_faiss is None:
-            self.__rag_faiss = RagFAISS(modelST_id)
+            self.__rag_faiss = RagFAISS(self.__modelST_id)
 
         return self.__rag_faiss
 
