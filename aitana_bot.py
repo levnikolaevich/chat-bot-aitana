@@ -1,24 +1,41 @@
 from app.chat_llm import Chat
-from app.rag import RagFAISS
+from app.rag_faiss import RagFAISS
 import os
 
-from app.ragv2 import RAGatouilleAitana
+from app.rag_ragatouille import RAGatouilleAitana
 
 
 class AitanaBot:
-    def __init__(self, llm_model_id="google/gemma-1.1-2b-it", modelST_id='sentence-transformers/LaBSE'):
+    def __init__(self, llm_model_id="google/gemma-1.1-2b-it", rag_engine="ragatouille"):
+        print("AitanaBot init...")
         self.__rag_faiss = None
+        self.__rag_RAGatouille = None
         self.__chat_llm = None
-        self.__modelST_id = modelST_id
-        self.__llm_model_id = llm_model_id
 
-    def __get_faiss_db(self):
         # 'sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2'
-        if self.__rag_faiss is None:
-            #self.__rag_faiss = RagFAISS(self.__modelST_id)
-            self.__rag_faiss = RAGatouilleAitana()
+        self.__modelST_id = 'sentence-transformers/LaBSE'
+        self.__llm_model_id = llm_model_id
+        self.__rag_engine = rag_engine
 
-        return self.__rag_faiss
+    @staticmethod
+    def get_available_llm():
+        return ["google/gemma-1.1-2b-it", "google/gemma-1.1-7b-it"]
+
+    @staticmethod
+    def get_available_RAG_engine():
+        return ["ragatouille", "faiss"]
+
+    def __get_RAG(self):
+        print(f"Get RAG engine: {self.__rag_engine}")
+        if self.__rag_engine == "faiss":
+            if self.__rag_faiss is None:
+                self.__rag_faiss = RagFAISS(self.__modelST_id)
+            return self.__rag_faiss
+
+        elif self.__rag_engine == "ragatouille":
+            if self.__rag_RAGatouille is None:
+                self.__rag_RAGatouille = RAGatouilleAitana()
+            return self.__rag_RAGatouille
 
     def __get_chat_llm(self):
         if self.__chat_llm is None:
@@ -51,6 +68,5 @@ class AitanaBot:
     # ====================
 
     def search_in_faiss_index(self, query, k=5):
-        rag_faiss = self.__get_faiss_db()
-        #return rag_faiss.search(query, k)
-        return rag_faiss.get_RAG().search(query)
+        rag = self.__get_RAG()
+        return rag.search(query, k)

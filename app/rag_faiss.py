@@ -39,7 +39,7 @@ class RagFAISS:
         # Perform the search on the index
         D, I = self.indexFlatIP.search(xq, k)  # D - cosine similarities, I - indices of nearest neighbors
         RAG_context = [self.text[idx] for idx in I[0]]
-        return D, I, RAG_context
+        return RAG_context
 
     def __read_or_create_faiss_index(self, paragraphs, normalize=False):
         """

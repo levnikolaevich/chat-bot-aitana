@@ -4,7 +4,8 @@ import torch
 
 from aitana_bot import AitanaBot
 
-available_llm = ["google/gemma-1.1-2b-it", "google/gemma-1.1-7b-it"]
+available_llm = AitanaBot.get_available_llm()
+available_RAG = AitanaBot.get_available_RAG_engine()
 max_new_tokens = 250
 RAG_search_k = 2
 
@@ -15,12 +16,15 @@ async def setup_agent(settings):
     cl.user_session.set("RAG_is_working", rag)
 
     # Clear the cache and set the new LLM model
+    rag_engine = settings["CurrentRAG"]
     current_LLM = settings["CurrentLLM"]
+
+    print(f'RAG Engine: {rag_engine}, LLM Model: {current_LLM}')
 
     cl.user_session.set("aitana_bot", None)
     torch.cuda.empty_cache()
 
-    aitana_bot = AitanaBot(current_LLM)
+    aitana_bot = AitanaBot(current_LLM, rag_engine)
     cl.user_session.set("aitana_bot", aitana_bot)
 
     # Update the settings
@@ -29,14 +33,15 @@ async def setup_agent(settings):
 
 @cl.on_chat_start
 async def on_chat_start():
-    aitana_bot = AitanaBot(available_llm[0])
+    aitana_bot = AitanaBot()
     cl.user_session.set("aitana_bot", aitana_bot)
 
     hello_msg = ("¡Hola! Estoy listo para responder preguntas sobre el sitio web de la Universidad de Alicante.\n" +
                  "Puedes hacer preguntas. Por ejemplo:\n" +
-                 "1. ¿Cuánto cuesta la matrícula en Inteligencia Artificial?\n" +
-                 "2. ¿Cuáles son los plazos de admisión para la facultad de Inteligencia Artificial?\n" +
-                 "3. ¿Quién es el coordinador del máster Universitario en Inteligencia Artificial?")
+                 "1. ¿Cuánto cuesta la matrícula en el máster de Inteligencia Artificial?\n" +
+                 "2. ¿Cuánto cuesta la matrícula en el grado de Inteligencia Artificial?\n" +
+                 "3. ¿Cuántas plazas están disponibles para la admisión en el Máster de Inteligencia Artificial?\n" +
+                 "4. ¿Quién es el coordinador del máster Universitario en Inteligencia Artificial?")
 
     await cl.Message(
         content=hello_msg,
@@ -50,6 +55,12 @@ async def on_chat_start():
                 id="RAG_is_working",
                 label="RAG Search",
                 initial=rag_initial
+            ),
+            Select(
+                id="CurrentRAG",
+                label="Current RAG Engine",
+                values=available_RAG,
+                initial_index=0,
             ),
             Select(
                 id="CurrentLLM",
@@ -73,12 +84,10 @@ async def on_message(message: cl.Message):
     RAG_context = None
 
     if cl.user_session.get("RAG_is_working"):
-        #_, _, RAG_context = await cl.make_async(aitana_bot.search_in_faiss_index)(message.content, RAG_search_k)
-        RAG_context = await cl.make_async(aitana_bot.search_in_faiss_index)(message.content)
+        RAG_context = await cl.make_async(aitana_bot.search_in_faiss_index)(message.content, RAG_search_k)
 
         print(RAG_context)
 
-        #content_list = [f'{item["page_name"]} {item["content"]}' for item in RAG_context]
         content_list = [f'{item["content"]}' for item in RAG_context]
         context_str = "\n----------\n".join(content_list)
 
@@ -96,9 +105,9 @@ async def on_message(message: cl.Message):
 
     response.append("\n " + output + "\n")
 
-    #if RAG_context is not None:
-        #response.append("\n More info:")
-        #response.append("\n" + RAG_context[0]['url'])
+    if RAG_context is not None:
+        response.append("\n More info:")
+        response.append("\n" + RAG_context[0]['url'])
 
     msg.content = "".join(response)
 
