@@ -1,6 +1,5 @@
 from app.chat_llm import Chat
 from app.rag_faiss import RagFAISS
-import os
 
 from app.rag_ragatouille import RAGatouilleAitana
 

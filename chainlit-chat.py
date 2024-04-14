@@ -41,7 +41,9 @@ async def on_chat_start():
                  "1. ¿Cuánto cuesta la matrícula en el máster de Inteligencia Artificial?\n" +
                  "2. ¿Cuánto cuesta la matrícula en el grado de Inteligencia Artificial?\n" +
                  "3. ¿Cuántas plazas están disponibles para la admisión en el Máster de Inteligencia Artificial?\n" +
-                 "4. ¿Quién es el coordinador del máster Universitario en Inteligencia Artificial?")
+                 "4. ¿Quién es el coordinador del máster Universitario en Inteligencia Artificial?\n" +
+                 "--------------------------------------\n" +
+                 "5. ¿Cuántas estrellas hay en el cielo?")
 
     await cl.Message(
         content=hello_msg,
@@ -105,7 +107,7 @@ async def on_message(message: cl.Message):
 
     response.append("\n " + output + "\n")
 
-    if RAG_context is not None:
+    if RAG_context is not None and "The provided text does not contain" not in output:
         response.append("\n More info:")
         response.append("\n" + RAG_context[0]['url'])
 
