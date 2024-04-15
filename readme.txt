@@ -163,7 +163,7 @@ Variant 2:
 For clean system:
     conda install pytorch torchvision torchaudio pytorch-cuda=12.1 faiss-cpu scrapy -c pytorch -c nvidia -c conda-forge
     pip install --upgrade pip setuptools
-    pip install gradio chainlit sentence-transformers ragatouille dspy-ai
+    pip install gradio chainlit sentence-transformers ragatouille dspy-ai huggingface_hub
     conda env export > environment-ubuntu.yml
 
 
