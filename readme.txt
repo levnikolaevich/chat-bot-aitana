@@ -40,6 +40,27 @@ Before you start, make sure you have the following prerequisites installed and s
 
     This process will ensure that you have a Conda environment ready with all the necessary dependencies for the project. Make sure to activate the project-specific Conda environment whenever you work on the project to maintain consistency across development and production setups.
 
+2. Verifying Compiler Command Availability and Setting Up the Compiler (for the RAGatouille Module)
+   To compile C++ code that ragatouille depends on, you need the MSVC (Microsoft Visual C++) compiler, which is available through Visual Studio Community Edition.
+
+    1. Download and install Visual Studio Community Edition from the official website: https://visualstudio.microsoft.com/downloads/.
+    2. During installation, select the "Desktop development with C++" workload to ensure the C++ compiler and relevant tools are installed.
+    3. Ensure that the path to the MSVC compiler is added to your system's PATH environment variable.
+        C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\<version>\bin\Hostx64\x64
+
+    To confirm that the compiler is correctly set up and accessible from your Conda environment, you can perform a simple check using the command prompt.
+
+    Open the command prompt and activate your Conda environment:
+         ```
+         conda activate AitanaENV
+         ```
+    Check if the cl command is accessible by running:
+         ```
+         cl
+         ```
+
+    If the command returns a version, it confirms that the compiler is set up correctly.
+
 By following these setup instructions, you'll ensure that all components of the project function correctly.
 
 -------------
@@ -89,79 +110,61 @@ Happy processing!
 -------------
 Usefully commands
 -------------
-conda create --name AitanaENV
-conda activate AitanaENV
-conda deactivate
-conda remove --name AitanaENV --all
+WINDOWS 11
+    conda create --name AitanaENV
+    conda activate AitanaENV
+    conda deactivate
+    conda remove --name AitanaENV --all
 
-conda env export > environment.yml
-conda env create -f environment.yml
-conda env update --name AitanaENV --file environment.yml --prune
+    conda env export > environment.yml
+    conda env create -f environment.yml
+    conda env update --name AitanaENV --file environment.yml --prune
 
-conda list --export > package-list.txt
-conda update --all
-conda clean --all
-pip list --outdated | Select-String -Pattern "^\w+" | ForEach-Object { $_.Matches.Groups[0].Value } | ForEach-Object { pip install --upgrade $_ }
-pip cache purge
+    conda list --export > package-list.txt
+    conda update --all
+    conda clean --all
+    pip list --outdated | Select-String -Pattern "^\w+" | ForEach-Object { $_.Matches.Groups[0].Value } | ForEach-Object { pip install --upgrade $_ }
+    pip cache purge
 
 
-
-#conda install faiss-gpu
-conda install pytorch torchvision torchaudio pytorch-cuda=12.1 faiss-cpu scrapy -c pytorch -c nvidia -c conda-forge
-#conda install -c nvidia cuda-toolkit
-pip install --upgrade pip setuptools
-pip install gradio chainlit sentence-transformers ragatouille dspy-ai
+    conda install pytorch torchvision torchaudio pytorch-cuda=12.1 faiss-cpu scrapy -c pytorch -c nvidia -c conda-forge
+    pip install --upgrade pip setuptools
+    pip install gradio chainlit sentence-transformers ragatouille dspy-ai
 
 ¿Cómo funciona el proceso de preinscripción para el Grado en Turismo y cuáles son las tasas de matrícula para diferentes inscripciones?
 
 
 =================
 Ubuntu 20.04
-sudo apt-get update
-sudo apt-get install build-essential
+    sudo apt-get update
+    sudo apt-get install libtiff5 build-essential
 
-mkdir -p ~/miniconda3
-wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh -O ~/miniconda3/miniconda.sh
-bash ~/miniconda3/miniconda.sh -b -u -p ~/miniconda3
-rm -rf ~/miniconda3/miniconda.sh
-~/miniconda3/bin/conda init bash
-~/miniconda3/bin/conda init zsh
+    mkdir -p ~/miniconda3
+    wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh -O ~/miniconda3/miniconda.sh
+    bash ~/miniconda3/miniconda.sh -b -u -p ~/miniconda3
+    rm -rf ~/miniconda3/miniconda.sh
+    ~/miniconda3/bin/conda init bash
+    ~/miniconda3/bin/conda init zsh
 
 RELOAD terminal
 
-git clone https://github.com/levnikolaevich/chat-bot-aitana.git
-cd chat-bot-aitana
+    git clone https://github.com/levnikolaevich/chat-bot-aitana.git
+    cd chat-bot-aitana
 
-conda create --name AitanaENV
-conda activate AitanaENV
+Variant 1:
+    conda create --name AitanaENV
+    conda activate AitanaENV
+    conda env update --name AitanaENV --file environment-ubuntu.yml --prune
 
-conda config --show
+Variant 2:
+    conda env create -f environment-ubuntu.yml
+    conda activate AitanaENV
 
-conda config --add channels pytorch
-conda config --add channels nvidia
-conda config --add channels conda-forge
-#conda config --add channels pytorch/label/nightly
-
-#conda env create -f environment.yaml
-
-conda install faiss-gpu
-conda install pytorch torchvision torchaudio pytorch-cuda -c pytorch -c nvidia
-conda install -c nvidia cuda-toolkit
-conda install scrapy
-pip install gradio
-pip install chainlit
-pip install sentence-transformers
-pip install ragatouille
-pip install dspy-ai
-
-
-pip install gdown
-mkdir -p ./data/ckpt
-
-gdown --id 13rNSmQI_VaMtwlMBSUaxEGybzJEl5KTi -O ./data/ckpt/ckpt_sifu.zip
-ls ./data/ckpt
-
-
+For clean system:
+    conda install pytorch torchvision torchaudio pytorch-cuda=12.1 faiss-cpu scrapy -c pytorch -c nvidia -c conda-forge
+    pip install --upgrade pip setuptools
+    pip install gradio chainlit sentence-transformers ragatouille dspy-ai
+    conda env export > environment-ubuntu.yml
 
 
 nvcc --version
@@ -170,5 +173,6 @@ nvidia-smi
 
 ===========
 
-wsl --unregister Ubuntu
 wsl --unregister Ubuntu-20.04
+
+\\wsl$
