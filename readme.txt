@@ -161,8 +161,7 @@ Variant 2:
     conda activate AitanaENV
 
 For clean system:
-    conda install pytorch torchvision torchaudio pytorch-cuda=12.1 faiss-cpu scrapy -c pytorch -c nvidia -c conda-forge
-    pip install --upgrade pip setuptools
+    conda install pytorch torchvision torchaudio pytorch-cuda=12.1 faiss-gpu cuda-toolkit scrapy -c pytorch -c nvidia -c conda-forge
     pip install gradio chainlit sentence-transformers ragatouille dspy-ai huggingface_hub
     conda env export > environment-ubuntu.yml
 
@@ -176,3 +175,5 @@ nvidia-smi
 wsl --unregister Ubuntu-20.04
 
 \\wsl$
+
+huggingface-cli login
