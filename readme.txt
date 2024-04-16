@@ -189,8 +189,8 @@ wsl --unregister Ubuntu-20.04
 docker login
 
 docker build -t levnikolaevich87/chat-bot-aitana:latest .
-docker push username/chat-bot-aitana:latest
-docker pull username/chat-bot-aitana:latest
+docker push levnikolaevich87/chat-bot-aitana:latest
+docker pull levnikolaevich87/chat-bot-aitana:latest
 
 docker run -p 8080:8000levnikolaevich87/chat-bot-aitana:latest
 docker run -e HF_TOKEN='your token' --gpus all -p 8080:8000 levnikolaevich87/chat-bot-aitana:latest
