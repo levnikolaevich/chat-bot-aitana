@@ -40,7 +40,7 @@ Before you start, make sure you have the following prerequisites installed and s
 
     This process will ensure that you have a Conda environment ready with all the necessary dependencies for the project. Make sure to activate the project-specific Conda environment whenever you work on the project to maintain consistency across development and production setups.
 
-2. Verifying Compiler Command Availability and Setting Up the Compiler (for the RAGatouille Module)
+2. Verifying Compiler Command Availability and Setting Up the Compiler (for the RAGatouille Module in Windows 11)
    To compile C++ code that ragatouille depends on, you need the MSVC (Microsoft Visual C++) compiler, which is available through Visual Studio Community Edition.
 
     1. Download and install Visual Studio Community Edition from the official website: https://visualstudio.microsoft.com/downloads/.
@@ -90,10 +90,17 @@ Launching the Application
 
     Then, follow these steps to launch the application:
     - Open a terminal or Anaconda Prompt and navigate to your project directory.
+
     - Activate your environment with:
          ```
          conda activate AitanaENV
          ```
+
+    - Set up the Hugging Face credentials by running and following the instructions in the terminal:
+         ```
+         huggingface-cli login
+         ```
+
     - Run the application with Gradio by executing the following command:
 
         python gradio-chat.py
@@ -161,7 +168,9 @@ Variant 2:
     conda activate AitanaENV
 
 For clean system:
-    conda install pytorch torchvision torchaudio pytorch-cuda=12.1 faiss-gpu cuda-toolkit scrapy -c pytorch -c nvidia -c conda-forge
+    conda create --name AitanaENV
+    conda activate AitanaENV
+    conda install faiss-gpu pytorch torchvision torchaudio pytorch-cuda=12.1 cuda-toolkit scrapy -c pytorch -c nvidia -c conda-forge
     pip install gradio chainlit sentence-transformers ragatouille dspy-ai huggingface_hub
     conda env export > environment-ubuntu.yml
 
@@ -176,4 +185,18 @@ wsl --unregister Ubuntu-20.04
 
 \\wsl$
 
-huggingface-cli login
+
+docker login
+
+docker build -t levnikolaevich87/chat-bot-aitana:latest .
+docker push username/chat-bot-aitana:latest
+docker pull username/chat-bot-aitana:latest
+
+docker run -p 8080:8000levnikolaevich87/chat-bot-aitana:latest
+docker run -e HF_TOKEN='your token' --gpus all -p 8080:8000 levnikolaevich87/chat-bot-aitana:latest
+
+
+
+docker images
+docker tag chat-bot-aitana levnikolaevich87/chat-bot-aitana:latest
+
