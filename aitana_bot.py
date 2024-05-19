@@ -1,6 +1,5 @@
 from app.chat_llm import Chat
 from app.rag_faiss import RagFAISS
-
 from app.rag_ragatouille import RAGatouilleAitana
 
 
@@ -18,7 +17,7 @@ class AitanaBot:
 
     @staticmethod
     def get_available_llm():
-        return ["google/gemma-1.1-2b-it", "google/gemma-1.1-7b-it"]
+        return Chat.get_allowed_llm_models()
 
     @staticmethod
     def get_available_RAG_engine():
@@ -39,7 +38,6 @@ class AitanaBot:
     def __get_chat_llm(self):
         if self.__chat_llm is None:
             self.__chat_llm = Chat(self.__llm_model_id)
-
         return self.__chat_llm
 
     # ====================
@@ -69,3 +67,12 @@ class AitanaBot:
     def search_in_faiss_index(self, query, k=5):
         rag = self.__get_RAG()
         return rag.search(query, k)
+
+    def __del__(self):
+        if self.__rag_faiss is not None:
+            del self.__rag_faiss
+        if self.__rag_RAGatouille is not None:
+            del self.__rag_RAGatouille
+        if self.__chat_llm is not None:
+            del self.__chat_llm
+        print("AitanaBot resources have been cleaned up.")

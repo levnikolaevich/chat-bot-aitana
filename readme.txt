@@ -168,9 +168,8 @@ For clean system:
     conda create --name AitanaENV
     conda activate AitanaENV
     conda install faiss-gpu pytorch torchvision torchaudio pytorch-cuda=12.1 cuda-toolkit scrapy -c pytorch -c nvidia -c conda-forge
-    pip install gradio chainlit sentence-transformers ragatouille dspy-ai huggingface_hub
+    pip install gradio chainlit sentence-transformers ragatouille dspy-ai huggingface_hub accelerate
     conda env export > environment-ubuntu.yml
-
 
 nvcc --version
 nvidia-smi

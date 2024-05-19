@@ -7,7 +7,7 @@ from aitana_bot import AitanaBot
 available_llm = AitanaBot.get_available_llm()
 available_RAG = AitanaBot.get_available_RAG_engine()
 max_new_tokens = 250
-RAG_search_k = 2
+RAG_search_k = 4
 
 @cl.on_settings_update
 async def setup_agent(settings):
@@ -21,7 +21,9 @@ async def setup_agent(settings):
 
     print(f'RAG Engine: {rag_engine}, LLM Model: {current_LLM}')
 
-    cl.user_session.set("aitana_bot", None)
+    old_bot = cl.user_session.get("aitana_bot")
+    if old_bot:
+        del old_bot
     torch.cuda.empty_cache()
 
     aitana_bot = AitanaBot(current_LLM, rag_engine)
@@ -88,7 +90,8 @@ async def on_message(message: cl.Message):
     if cl.user_session.get("RAG_is_working"):
         RAG_context = await cl.make_async(aitana_bot.search_in_faiss_index)(message.content, RAG_search_k)
 
-        print(RAG_context)
+        print("RAG_context Count:")
+        print(len(RAG_context))
 
         content_list = [f'{item["content"]}' for item in RAG_context]
         context_str = "\n----------\n".join(content_list)
@@ -97,10 +100,10 @@ async def on_message(message: cl.Message):
         context += "\n\n" + context_str + "\n"
 
     final_prompt = (f"Summarize the key details from the context, retaining only the most crucial information, " +
-                    f"and answer the question concisely.\n\n" +
+                    f"and answer the question concisely in a language of the question.\n\n" +
                     f"CONTEXT:\n{context}\n\nQUESTION:\n{message.content}")
 
-    print(final_prompt)
+    #print(final_prompt)
     output = await cl.make_async(aitana_bot.get_answer)(final_prompt, max_new_tokens)
 
     response = []
@@ -109,7 +112,8 @@ async def on_message(message: cl.Message):
 
     if RAG_context is not None and "The provided text does not contain" not in output:
         response.append("\n More info:")
-        response.append("\n" + RAG_context[0]['url'])
+        for context in RAG_context:
+            response.append("\n" + context['url'])
 
     msg.content = "".join(response)
 

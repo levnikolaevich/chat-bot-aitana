@@ -51,11 +51,6 @@ class RAGatouilleAitana:
             print(f"'RAGatouille' exists. Searching..")
             results = self.INDEX.search(query, k=k)
 
-            print("--------")
-            print("results")
-            print(results)
-            print("--------")
-
             output = [
                 {
                     "rank": item["rank"],
