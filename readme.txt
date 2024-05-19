@@ -144,6 +144,7 @@ WINDOWS 11
 =================
 Ubuntu 20.04
     sudo apt-get update
+    sudo apt-get upgrade -y
     sudo apt-get install libtiff5 build-essential
 
     mkdir -p ~/miniconda3

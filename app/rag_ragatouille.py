@@ -8,16 +8,16 @@ class RAGatouilleAitana:
     def __init__(self, model_st_id="colbert-ir/colbertv2.0"):
         self.index_name = 'aitana'
         self.index_path = f".ragatouille/colbert/indexes/{self.index_name}/"
-        self.RAG = None
-        self.__prepare_data(model_st_id)
+        self.colbert = RAGPretrainedModel.from_pretrained(model_st_id)
+        self.INDEX = None
+        self.__prepare_data()
 
-    def __prepare_data(self, model_st_id):
+    def __prepare_data(self):
         if os.path.exists(self.index_path):
             print("Index ragatouille does exist. Skipping preparation index.")
             return
 
         print("Index ragatouille does not exist. Preparation index.")
-        rag = RAGPretrainedModel.from_pretrained(model_st_id)
         paragraphs = ContentExtractor.extract_text_to_paragraphs()
         collection = [f'{item["page_name"]} {item["content"]}' for item in paragraphs]
         document_metadatas = [
@@ -28,7 +28,7 @@ class RAGatouilleAitana:
         ]
         document_ids = [f'{item["index_page"]}' for item in paragraphs]
 
-        rag.index(
+        self.colbert.index(
             collection=collection,
             document_ids=document_ids,
             document_metadatas=document_metadatas,
@@ -43,13 +43,28 @@ class RAGatouilleAitana:
             print("Index ragatouille does not exist.")
             return
 
-        if self.RAG is None:
+        k = 5
+        if self.INDEX is None:
             print(f"'RAGatouille' is None. Loading from index {self.index_path}.")
-            self.RAG = RAGPretrainedModel.from_index(self.index_path)
+            self.INDEX = RAGPretrainedModel.from_index(self.index_path)
 
-        if self.RAG is not None:
+        if self.INDEX is not None:
             print(f"'RAGatouille' exists. Searching..")
-            results = self.RAG.search(query, k=k)
+            docs = self.INDEX.search(query, k=k)
+
+            print("--------")
+            print("docs")
+            print(docs)
+            print("--------")
+
+            results = self.colbert.rerank(query=query, documents=[
+                d['content'] for d in docs
+            ], k=k)
+
+            print("--------")
+            print("results")
+            print(results)
+            print("--------")
 
             output = [
                 {
