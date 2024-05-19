@@ -43,23 +43,13 @@ class RAGatouilleAitana:
             print("Index ragatouille does not exist.")
             return
 
-        k = 5
         if self.INDEX is None:
             print(f"'RAGatouille' is None. Loading from index {self.index_path}.")
             self.INDEX = RAGPretrainedModel.from_index(self.index_path)
 
         if self.INDEX is not None:
             print(f"'RAGatouille' exists. Searching..")
-            docs = self.INDEX.search(query, k=k)
-
-            print("--------")
-            print("docs")
-            print(docs)
-            print("--------")
-
-            results = self.colbert.rerank(query=query, documents=[
-                d['content'] for d in docs
-            ], k=k)
+            results = self.INDEX.search(query, k=k)
 
             print("--------")
             print("results")

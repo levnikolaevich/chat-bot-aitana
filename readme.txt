@@ -101,10 +101,6 @@ Launching the Application
          huggingface-cli login
          ```
 
-    - Run the application with Gradio by executing the following command:
-
-        python gradio-chat.py
-
     - Run the application with Chainlit by executing the following command:
 
         chainlit run chainlit-chat.py -w
@@ -145,13 +141,13 @@ WINDOWS 11
 Ubuntu 20.04
     sudo apt-get update
     sudo apt-get upgrade -y
-    sudo apt-get install libtiff5 build-essential
+    sudo apt-get install libtiff5 build-essential -y
 
-    mkdir -p ~/miniconda3
-    wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh -O ~/miniconda3/miniconda.sh
-    bash ~/miniconda3/miniconda.sh -b -u -p ~/miniconda3
-    rm -rf ~/miniconda3/miniconda.sh
-    ~/miniconda3/bin/conda init bash
+    mkdir -p ~/miniconda3 && \
+    wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh -O ~/miniconda3/miniconda.sh && \
+    bash ~/miniconda3/miniconda.sh -b -u -p ~/miniconda3 && \
+    rm -rf ~/miniconda3/miniconda.sh && \
+    ~/miniconda3/bin/conda init bash && \
     ~/miniconda3/bin/conda init zsh
 
 RELOAD terminal
